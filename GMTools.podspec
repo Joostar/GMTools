@@ -69,7 +69,7 @@ s.subspec 'Tools' do |ss|
 
 
   # s.framework  = "SomeFramework"
-  s.frameworks = "Foundation", "GMTools"
+  s.frameworks = "Foundation"
   
 s.dependency     'SimpleKeychain'
 
