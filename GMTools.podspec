@@ -32,11 +32,34 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/Joostar/GMTools.git"}
 
 
-s.source_files = 'GMTools/*.{h,m}','GMTools/Tools/*.{h,m}','GMTools/Category/Deivce/*.{h,m}','GMTools/Category/Image/*.{h,m}','GMTools/Category/Views/*.{h,m}'
-  
-  #s.exclude_files = "Classes/Exclude"
 
-  s.public_header_files = 'GMTools/*.h,','GMTools/Tools/*.h','GMTools/Category/Deivce/*.h','GMTools/Category/Image/*.h','GMTools/Category/Views/*.h'
+s.subspec 'GMTools' do |ss|
+    ss.source_files = 'GMTools/GMTools.{h,m}','GMTools/GMTools{_private,+Check,+DateFormat,+Check,+Encode,+Parameters,+randomColor,CommonDefines}.{h,m}'
+    ss.public_header_files = 'GMTools/GMTools.h','GMTools/GMTools{_private,+Check,+DateFormat,+Check,+Encode,+Parameters,+randomColor,CommonDefines}.h'
+
+  end
+
+  s.subspec 'Deivce' do |ss|
+    ss.source_files = 'GMTools/UIDevice+Ext.{h,m}'
+    ss.public_header_files = 'GMTools/UIDevice+Ext.h'
+   
+  end
+
+  s.subspec 'Image' do |ss|
+    
+    ss.source_files = 'GMTools/UIImage{+Blend,+Clip,+Color,+Corner,+Resize,+Rotate}.{h,m}'
+    ss.public_header_files = 'GMTools/UIImage{+Blend,+Clip,+Color,+Corner,+Resize,+Rotate}.h'
+
+   
+  end
+
+  s.subspec 'Views' do |ss|
+    
+    ss.source_files = 'GMTools/Views{+Corner,+Shadow}.{h,m}'
+    ss.public_header_files = 'GMTools/Views{+Corner,+Shadow}.h'
+  end
+
+ 
 
 
   # s.resource  = "icon.png"
