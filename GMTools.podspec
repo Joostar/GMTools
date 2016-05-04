@@ -53,10 +53,10 @@ s.subspec 'GMTools' do |ss|
    
   end
 
-  s.subspec 'Views' do |ss|
+  s.subspec 'UIView' do |ss|
     
-    ss.source_files = 'GMTools/Views{+Corner,+Shadow}.{h,m}'
-    ss.public_header_files = 'GMTools/Views{+Corner,+Shadow}.h'
+    ss.source_files = 'GMTools/UIView{+Corner,+Shadow}.{h,m}'
+    ss.public_header_files = 'GMTools/UIView{+Corner,+Shadow}.h'
   end
 
  
