@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
 
 
 
-s.subspec 'GMTools' do |ss|
+s.subspec 'Tools' do |ss|
     ss.source_files = 'GMTools/GMTools.{h,m}','GMTools/GMTools{_private,+Check,+DateFormat,+Check,+Encode,+Parameters,+randomColor,CommonDefines}.{h,m}'
     ss.public_header_files = 'GMTools/GMTools.h','GMTools/GMTools{_private,+Check,+DateFormat,+Check,+Encode,+Parameters,+randomColor,CommonDefines}.h'
 
@@ -70,7 +70,8 @@ s.subspec 'GMTools' do |ss|
 
   # s.framework  = "SomeFramework"
   s.frameworks = "Foundation", "GMTools"
-  #s.dependency     'yajl-objc', '~> 0.2.27'
+  
+s.dependency     'SimpleKeychain'
 
 
   s.requires_arc = false
