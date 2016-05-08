@@ -59,7 +59,11 @@ s.subspec 'Tools' do |ss|
     ss.public_header_files = 'GMTools/UIView{+Corner,+Shadow}.h'
   end
 
- 
+ s.subspec 'Timer' do |ss|
+    
+    ss.source_files = 'GMTools/NSTimer{+BlockSuppor}.{h,m}'
+    ss.public_header_files = 'GMTools/NSTimer{+BlockSuppor}.h'
+  end
 
 
   # s.resource  = "icon.png"
