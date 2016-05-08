@@ -61,8 +61,8 @@ s.subspec 'Tools' do |ss|
 
  s.subspec 'Timer' do |ss|
     
-    ss.source_files = 'GMTools/NSTimer{+BlockSupport}.{h,m}'
-    ss.public_header_files = 'GMTools/NSTimer{+BlockSupport}.h'
+    ss.source_files = 'GMTools/NSTimer+BlockSupport.{h,m}'
+    ss.public_header_files = 'GMTools/NSTimer+BlockSupport.h'
   end
 
 
