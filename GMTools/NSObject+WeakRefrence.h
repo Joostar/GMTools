@@ -19,5 +19,5 @@ typedef  void(^gm_class(RemoveMethod))(gm_class(Self) objectSelf);//remove metho
  *
  *  @param removeMethod the remove method used, while self is dealloc
  */
--(gm_class(Self)) gm_method(weakSelf:(gm_class(RemoveMethod)) removeMethod);
+-(gm_class(Self)) gm_method(weakSelfWithRemoveMethod:(gm_class(RemoveMethod)) removeMethod);
 @end

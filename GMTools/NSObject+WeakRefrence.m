@@ -59,7 +59,7 @@ void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMet
 
 @implementation NSObject(gm_class(WeakRefrence))
 
--(gm_class(Self)) gm_method(weakSelf:(gm_class(RemoveMethod)) removeMethod)
+-(gm_class(Self)) gm_method(weakSelfWithRemoveMethod:(gm_class(RemoveMethod)) removeMethod)
 {
     static dispatch_once_t removeMethodsOnce;
     dispatch_once(&removeMethodsOnce, ^{
