@@ -12,38 +12,38 @@
 
 const static NSString * WeakSelfRefrenceKey = @"WeakSelfRefrenceKey";
 const static NSString * WeakRefrenceOriginalDeallocIMPKey = @"WeakRefrenceOriginalDeallocIMPKey";
-const static NSString * WeakRefrenceRemoveMethodsKey = @"WeakRefrenceRemoveMethodsKey";
+const static NSString * WeakRefrenceDestroyMethodsKey = @"WeakRefrenceDestroyMethodsKey";
 
 void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMethod
 
 @interface NSObject(gm_class(WeakRefrenceProperties))
-@property(nonatomic,copy) gm_class(Self) weakSelfRefrence;
+@property(nonatomic,copy) gm_class(Object) weakSelfRefrence;
 @property(nonatomic,assign) IMP originalDeallocIMP;
-@property(nonatomic,retain) NSMutableArray * removeMethods;
+@property(nonatomic,retain) NSMutableArray * destroyMethods;
 @end
 
 @implementation NSObject(gm_class(WeakRefrenceProperties))
 @dynamic weakSelfRefrence;
-@dynamic removeMethods;
+@dynamic destroyMethods;
 @dynamic originalDeallocIMP;
 #pragma mark properties
 
--(gm_class(Self))weakSelfRefrence
+-(gm_class(Object))weakSelfRefrence
 {
     return objc_getAssociatedObject(self, WeakSelfRefrenceKey);
 }
--(void)setWeakSelfRefrence:(gm_class(Self))weakSelfRefrence
+-(void)setWeakSelfRefrence:(gm_class(Object))weakSelfRefrence
 {
     objc_setAssociatedObject(self, WeakSelfRefrenceKey, weakSelfRefrence, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
--(NSMutableArray *)removeMethods
+-(NSMutableArray *)destroyMethods
 {
-    return objc_getAssociatedObject(self, WeakRefrenceRemoveMethodsKey);
+    return objc_getAssociatedObject(self, WeakRefrenceDestroyMethodsKey);
 }
--(void)setRemoveMethods:(NSMutableArray *)removeMethods
+-(void)setDestroyMethods:(NSMutableArray *)destroyMethods
 {
-    objc_setAssociatedObject(self, WeakRefrenceRemoveMethodsKey, removeMethods, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, WeakRefrenceDestroyMethodsKey, destroyMethods, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 -(IMP)originalDeallocIMP
@@ -59,11 +59,11 @@ void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMet
 
 @implementation NSObject(gm_class(WeakRefrence))
 
--(gm_class(Self)) gm_method(weakSelfWithRemoveMethod:(gm_class(RemoveMethod)) removeMethod)
+-(gm_class(Object)) gm_method(weakSelfWithDestroyMethod:(gm_class(DestroyMethod)) destroyMethod)
 {
-    static dispatch_once_t removeMethodsOnce;
-    dispatch_once(&removeMethodsOnce, ^{
-        self.removeMethods = [NSMutableArray array];
+    static dispatch_once_t destroyMethodsOnce;
+    dispatch_once(&destroyMethodsOnce, ^{
+        self.destroyMethods = [NSMutableArray array];
     });
     //
     static dispatch_once_t weakSelfRefrenceOnce;
@@ -74,8 +74,8 @@ void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMet
             return weakSelf;
         };
     });
-    if(removeMethod)
-        [self.removeMethods addObject:[removeMethod copy]];//
+    if(destroyMethod)
+        [self.destroyMethods addObject:[destroyMethod copy]];//
     
     return self.weakSelfRefrence;
 }
@@ -84,13 +84,13 @@ void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMet
 
 void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor))
 {
-    NSArray * removeMethods = self.removeMethods;
-    for(gm_class(RemoveMethod) removeMethod in removeMethods)
+    NSArray * destroyMethods = self.destroyMethods;
+    for(gm_class(DestroyMethod) destroyMethod in destroyMethods)
     {
-        removeMethod(self.weakSelfRefrence);
-        [removeMethod release];
+        destroyMethod(self.weakSelfRefrence);
+        [destroyMethod release];
     }
-    self.removeMethods = 0;
+    self.destroyMethods = 0;
     void (*originalDeallocIMP)(id,SEL) = (void(*)(id,SEL))(self.originalDeallocIMP);
     originalDeallocIMP(self,selctor);
 }

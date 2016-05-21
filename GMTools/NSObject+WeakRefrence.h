@@ -9,15 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "GMToolsCommonDefines.h"
 
-typedef  id(^gm_class(Self))();//will return self
-typedef  void(^gm_class(RemoveMethod))(gm_class(Self) objectSelf);//remove method
+typedef  id(^gm_class(Object))();//will return self
+typedef  void(^gm_class(DestroyMethod))(gm_class(Object) object);//destroy method
 
 @interface NSObject(gm_class(WeakRefrence))
 
 /**
- *  return a weak-self-refrence block with a givien remove method callback
+ *  return a weak-self-refrence block with a givien destroy method callback
  *
- *  @param removeMethod the remove method used, while self is dealloc
+ *  @param destroyMethod the destroy method used, while self is dealloc
  */
--(gm_class(Self)) gm_method(weakSelfWithRemoveMethod:(gm_class(RemoveMethod)) removeMethod);
+-(gm_class(Object)) gm_method(weakSelfWithDestroyMethod:(gm_class(DestroyMethod)) destroyMethod);
 @end
