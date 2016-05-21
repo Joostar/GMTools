@@ -11,7 +11,6 @@
 #import "GMTools+MethodSwizzling.h"
 
 const static NSString * WeakSelfRefrenceKey = @"WeakSelfRefrenceKey";
-const static NSString * WeakRefrenceOriginalDeallocIMPKey = @"WeakRefrenceOriginalDeallocIMPKey";
 const static NSString * WeakRefrenceDestroyMethodsKey = @"WeakRefrenceDestroyMethodsKey";
 
 void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMethod
@@ -48,14 +47,12 @@ static IMP OriginalDeallocIMP = 0;
 
 
 @implementation NSObject(gm_class(WeakRefrence))
-
++(void)load
+{
+    OriginalDeallocIMP = [gm_class(Tools) gm_method(swizzlingInstanceMethodIMP:self.class selector:@selector(dealloc) alternativeIMP:(IMP)(gm_method(weakRefrenceDealloc)))];
+}
 -(gm_class(Object)) gm_method(weakSelfWithDestroyMethod:(gm_class(DestroyMethod)) destroyMethod)
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        OriginalDeallocIMP = [gm_class(Tools) gm_method(swizzlingInstanceMethodIMP:self.class selector:@selector(dealloc) alternativeIMP:(IMP)(gm_method(weakRefrenceDealloc)))];
-    });
-    //
     if(!self.weakSelfRefrence)
     {
         self.destroyMethods = [NSMutableArray array];
@@ -75,13 +72,17 @@ static IMP OriginalDeallocIMP = 0;
 
 void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor))
 {
-    NSArray * destroyMethods = self.destroyMethods;
-    for(gm_class(DestroyMethod) destroyMethod in destroyMethods)
+    if(self.weakSelfRefrence)
     {
-        destroyMethod(self.weakSelfRefrence);
-        [destroyMethod release];
+        NSArray * destroyMethods = self.destroyMethods;
+        for(gm_class(DestroyMethod) destroyMethod in destroyMethods)
+        {
+            destroyMethod(self.weakSelfRefrence);
+            [destroyMethod release];
+        }
+        self.destroyMethods = 0;
+        self.weakSelfRefrence = 0;
     }
-    self.destroyMethods = 0;
     void (*originalDeallocIMP)(id,SEL) = (void(*)(id,SEL))(OriginalDeallocIMP);
     assert(originalDeallocIMP != 0 && "bug: OriginalDeallocIMP should not be 0");
     originalDeallocIMP(self,selctor);
