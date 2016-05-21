@@ -103,7 +103,7 @@
     //int week=0;
     comps = [calendar components:unitFlags fromDate:date];
     return [comps weekday];
-
+    
 }
 
 //
@@ -114,7 +114,9 @@
     cfDate.hour=0;
     cfDate.minute=0;
     cfDate.second=1;
-    return (int)CFAbsoluteTimeGetDayOfWeek(CFGregorianDateGetAbsoluteTime(cfDate,tz),tz);
+    int res = (int)CFAbsoluteTimeGetDayOfWeek(CFGregorianDateGetAbsoluteTime(cfDate,tz),tz);
+    CFRelease(tz);
+    return res;
 }
 
 @end
