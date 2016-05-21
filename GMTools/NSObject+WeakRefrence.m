@@ -15,17 +15,16 @@ const static NSString * WeakRefrenceOriginalDeallocIMPKey = @"WeakRefrenceOrigin
 const static NSString * WeakRefrenceDestroyMethodsKey = @"WeakRefrenceDestroyMethodsKey";
 
 void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMethod
+static IMP OriginalDeallocIMP = 0;
 
 @interface NSObject(gm_class(WeakRefrenceProperties))
 @property(nonatomic,copy) gm_class(Object) weakSelfRefrence;
-@property(nonatomic,assign) IMP originalDeallocIMP;
 @property(nonatomic,retain) NSMutableArray * destroyMethods;
 @end
 
 @implementation NSObject(gm_class(WeakRefrenceProperties))
 @dynamic weakSelfRefrence;
 @dynamic destroyMethods;
-@dynamic originalDeallocIMP;
 #pragma mark properties
 
 -(gm_class(Object))weakSelfRefrence
@@ -45,15 +44,6 @@ void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMet
 {
     objc_setAssociatedObject(self, WeakRefrenceDestroyMethodsKey, destroyMethods, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-
--(IMP)originalDeallocIMP
-{
-    return (IMP)objc_getAssociatedObject(self, WeakRefrenceOriginalDeallocIMPKey);
-}
--(void)setOriginalDeallocIMP:(IMP)originalDeallocIMP
-{
-    objc_setAssociatedObject(self, WeakRefrenceOriginalDeallocIMPKey, (id)originalDeallocIMP, OBJC_ASSOCIATION_ASSIGN);
-}
 @end
 
 
@@ -61,19 +51,20 @@ void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor));//newDeallocMet
 
 -(gm_class(Object)) gm_method(weakSelfWithDestroyMethod:(gm_class(DestroyMethod)) destroyMethod)
 {
-    static dispatch_once_t destroyMethodsOnce;
-    dispatch_once(&destroyMethodsOnce, ^{
-        self.destroyMethods = [NSMutableArray array];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        OriginalDeallocIMP = [gm_class(Tools) gm_method(swizzlingInstanceMethodIMP:self.class selector:@selector(dealloc) alternativeIMP:(IMP)(gm_method(weakRefrenceDealloc)))];
     });
     //
-    static dispatch_once_t weakSelfRefrenceOnce;
-    dispatch_once(&weakSelfRefrenceOnce, ^{
-        self.originalDeallocIMP = [gm_class(Tools) gm_method(swizzlingInstanceMethodIMP:self.class selector:@selector(dealloc) alternativeIMP:(IMP)(gm_method(weakRefrenceDealloc)))];
+    if(!self.weakSelfRefrence)
+    {
+        self.destroyMethods = [NSMutableArray array];
+        //
         __block typeof (self) weakSelf = self;
         self.weakSelfRefrence = ^id(){
             return weakSelf;
         };
-    });
+    }//fi
     if(destroyMethod)
         [self.destroyMethods addObject:[destroyMethod copy]];//
     
@@ -91,7 +82,8 @@ void gm_method(weakRefrenceDealloc(NSObject * self,SEL selctor))
         [destroyMethod release];
     }
     self.destroyMethods = 0;
-    void (*originalDeallocIMP)(id,SEL) = (void(*)(id,SEL))(self.originalDeallocIMP);
+    void (*originalDeallocIMP)(id,SEL) = (void(*)(id,SEL))(OriginalDeallocIMP);
+    assert(originalDeallocIMP != 0 && "bug: OriginalDeallocIMP should not be 0");
     originalDeallocIMP(self,selctor);
 }
 
