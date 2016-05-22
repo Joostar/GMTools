@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
 
 
 s.subspec 'Tools' do |ss|
-    ss.source_files = 'GMTools/GMTools.{h,m}','GMTools/GMTools{_private,+Check,+DateFormat,+Check,+Encode,+Parameters,+randomColor,CommonDefines}.{h,m}'
+    ss.source_files = 'GMTools/GMTools.{h,m}','GMTools/GMTools{_private,+Check,+MethodSwizzling,+DateFormat,+Check,+Encode,+Parameters,+randomColor,CommonDefines}.{h,m}'
     ss.public_header_files = 'GMTools/GMTools.h','GMTools/GMTools{_private,+Check,+DateFormat,+Check,+Encode,+Parameters,+randomColor,CommonDefines}.h'
 
   end
